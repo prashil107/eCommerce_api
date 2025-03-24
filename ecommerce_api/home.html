@@ -26,22 +26,7 @@
             border-radius: 3px;
             white-space: pre-wrap;
         }
-        .try-button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .api-response {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
+
     </style>
 </head>
 <body>
@@ -49,10 +34,6 @@
     <p>This API provides endpoints for managing an e-commerce platform, including products and user management. Admin users have special privileges to manage users.</p>
 
     <div id="endpoints"></div>
-    <div id="apiResponse" class="api-response" style="display: none;">
-        <h3>API Response:</h3>
-        <pre id="responseContent"></pre>
-    </div>
 
     <script>
         const API_BASE_URL = "https://your-api-url.com/api"; // Replace with your API URL
@@ -119,8 +100,6 @@
         ];
 
         const endpointsDiv = document.getElementById('endpoints');
-        const apiResponseDiv = document.getElementById('apiResponse');
-        const responseContentPre = document.getElementById('responseContent');
 
         endpoints.forEach(endpoint => {
             const endpointDiv = document.createElement('div');
@@ -130,35 +109,9 @@
                 <p>${endpoint.description}</p>
                 ${endpoint.sampleRequest ? `<div class="request">Request: ${JSON.stringify(endpoint.sampleRequest, null, 2)}</div>` : ''}
                 <div class="response">Expected Response: ${JSON.stringify(endpoint.sampleResponse, null, 2)}</div>
-                <button class="try-button" onclick="callAPI(${endpoints.indexOf(endpoint)})">Try It</button>
             `;
             endpointsDiv.appendChild(endpointDiv);
         });
-
-        function callAPI(index) {
-            const endpoint = endpoints[index];
-            const url = API_BASE_URL + endpoint.path.replace(":id", "1"); // replace :id with 1.
-            let options = {
-                method: endpoint.method,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
-            if (endpoint.sampleRequest && (endpoint.method === "POST" || endpoint.method === "PUT")) {
-                options.body = JSON.stringify(endpoint.sampleRequest);
-            }
-
-            fetch(url, options)
-                .then(response => response.json())
-                .then(data => {
-                    responseContentPre.textContent = JSON.stringify(data, null, 2);
-                    apiResponseDiv.style.display = 'block';
-                })
-                .catch(error => {
-                    responseContentPre.textContent = `Error: ${error.message}`;
-                    apiResponseDiv.style.display = 'block';
-                });
-        }
     </script>
 </body>
 </html>
