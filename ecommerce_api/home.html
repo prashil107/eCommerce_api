@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        .endpoint {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .endpoint h2 {
+            margin-top: 0;
+        }
+        .request, .response {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+        }
+        .try-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .api-response {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Documentation</h1>
+    <p>This API provides endpoints for managing an e-commerce platform, including products and user management. Admin users have special privileges to manage users.</p>
+
+    <div id="endpoints"></div>
+    <div id="apiResponse" class="api-response" style="display: none;">
+        <h3>API Response:</h3>
+        <pre id="responseContent"></pre>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://your-api-url.com/api"; // Replace with your API URL
+
+        const endpoints = [
+            {
+                method: "GET",
+                path: "/products",
+                description: "Get all products",
+                sampleResponse: [{ id: 1, name: "Laptop", price: 999.99 }],
+            },
+            {
+                method: "POST",
+                path: "/products",
+                description: "Add a new product",
+                sampleRequest: { name: "Smartphone", price: 499.99 },
+                sampleResponse: { success: true, id: 2 },
+            },
+            {
+                method: "GET",
+                path: "/products/:id",
+                description: "Get product details",
+                sampleResponse: { id: 1, name: "Laptop", price: 999.99 },
+            },
+            {
+                method: "PUT",
+                path: "/products/:id",
+                description: "Update a product",
+                sampleRequest: { name: "Updated Laptop", price: 899.99 },
+                sampleResponse: { success: true },
+            },
+            {
+                method: "DELETE",
+                path: "/products/:id",
+                description: "Delete a product",
+                sampleResponse: { success: true },
+            },
+            {
+                method: "GET",
+                path: "/admin/users",
+                description: "Get all users (Admin only)",
+                sampleResponse: [{ id: 1, name: "John Doe", email: "john@example.com" }],
+            },
+            {
+                method: "POST",
+                path: "/admin/users",
+                description: "Create a new user (Admin only)",
+                sampleRequest: { name: "Jane Doe", email: "jane@example.com", password: "securepass" },
+                sampleResponse: { success: true, id: 3 },
+            },
+            {
+                method: "PUT",
+                path: "/admin/users/:id",
+                description: "Update user details (Admin only)",
+                sampleRequest: { name: "Updated User", email: "updated@example.com" },
+                sampleResponse: { success: true },
+            },
+            {
+                method: "DELETE",
+                path: "/admin/users/:id",
+                description: "Delete a user (Admin only)",
+                sampleResponse: { success: true },
+            },
+        ];
+
+        const endpointsDiv = document.getElementById('endpoints');
+        const apiResponseDiv = document.getElementById('apiResponse');
+        const responseContentPre = document.getElementById('responseContent');
+
+        endpoints.forEach(endpoint => {
+            const endpointDiv = document.createElement('div');
+            endpointDiv.className = 'endpoint';
+            endpointDiv.innerHTML = `
+                <h2>${endpoint.method} ${endpoint.path}</h2>
+                <p>${endpoint.description}</p>
+                ${endpoint.sampleRequest ? `<div class="request">Request: ${JSON.stringify(endpoint.sampleRequest, null, 2)}</div>` : ''}
+                <div class="response">Expected Response: ${JSON.stringify(endpoint.sampleResponse, null, 2)}</div>
+                <button class="try-button" onclick="callAPI(${endpoints.indexOf(endpoint)})">Try It</button>
+            `;
+            endpointsDiv.appendChild(endpointDiv);
+        });
+
+        function callAPI(index) {
+            const endpoint = endpoints[index];
+            const url = API_BASE_URL + endpoint.path.replace(":id", "1"); // replace :id with 1.
+            let options = {
+                method: endpoint.method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (endpoint.sampleRequest && (endpoint.method === "POST" || endpoint.method === "PUT")) {
+                options.body = JSON.stringify(endpoint.sampleRequest);
+            }
+
+            fetch(url, options)
+                .then(response => response.json())
+                .then(data => {
+                    responseContentPre.textContent = JSON.stringify(data, null, 2);
+                    apiResponseDiv.style.display = 'block';
+                })
+                .catch(error => {
+                    responseContentPre.textContent = `Error: ${error.message}`;
+                    apiResponseDiv.style.display = 'block';
+                });
+        }
+    </script>
+</body>
+</html>
